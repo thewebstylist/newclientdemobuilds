@@ -259,7 +259,7 @@ p { margin: 0 0 1.1em; }
   font-size: .8rem; line-height: 1.35; color: var(--brand-deep);
 }
 .portrait-badge strong { display: block; font-size: .92rem; }
-.iact-logo { width: 58px; height: 58px; object-fit: contain; flex: none; }
+.iact-logo { width: 72px; height: 72px; object-fit: contain; flex: none; }
 .iact-fallback { flex: none; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: var(--brand-mist); color: var(--brand); font-weight: 700; font-size: .8rem; letter-spacing: .04em; }
 .role { font-size: .82rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--brand); margin-top: -.4rem; margin-bottom: 1.6rem; }
 .about h2 { font-size: clamp(2.4rem, 1.6rem + 3vw, 3.8rem); font-weight: 300; }
