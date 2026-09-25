@@ -21,6 +21,7 @@ All photos below are in `images/`. To swap one, replace the file and keep the sa
 | `images/libbe-open-system.webp` | The LIBBE table in the treatment room |
 | `images/libbe-controls.webp` | Close-up of the LIBBE control panel |
 | `images/iact-logo.webp` | I-ACT association logo |
+| `images/iasi-social-preview.jpg` | 1200×630 social share image (link previews in texts, Facebook, LinkedIn, X) |
 | `images/colon-illustration.webp` | Water-colon illustration beside the FAQ (created by the client) |
 
 ## WordPress single-file version
@@ -38,3 +39,13 @@ Notes:
 - Set the page title and meta description in the SEO plugin (for example Yoast), since a widget can't set them.
 
 To regenerate the file after editing the site: `python3 tools/build_embed.py` (needs Pillow).
+
+## Social share preview (text messages, Facebook, LinkedIn, X)
+
+The share image is `images/iasi-social-preview.jpg` (1200×630). Link previews read it from the page `<head>`, which a page-builder widget can't set, so on WordPress:
+
+1. Upload `iasi-social-preview.jpg` to **Media > Add New**.
+2. Set it as the homepage share image in the SEO plugin. In Yoast, edit the homepage, open the **Social** tab, and choose it as the Facebook image and the X image. To make it the fallback for every page, also set it under **Yoast SEO > Settings > Site basics > Site image**.
+3. Refresh cached previews with the Facebook Sharing Debugger (https://developers.facebook.com/tools/debug/) and LinkedIn Post Inspector (https://www.linkedin.com/post-inspector/). iMessage caches per conversation, so test in a new thread.
+
+`index.html` points to `https://iasihealth.com/wp-content/uploads/2026/09/iasi-social-preview.jpg`, the address WordPress gives the file when uploaded in September 2026. If the uploaded URL differs, update the `og:image` and `twitter:image` tags.
