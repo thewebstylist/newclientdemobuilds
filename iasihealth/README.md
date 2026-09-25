@@ -10,7 +10,7 @@ Open `index.html` in a browser; there is no build step.
 
 ## Images
 
-The hero, sanctuary and mission backgrounds and the logo load from the live WordPress media library (`iasihealth.com/wp-content/uploads/2026/01/`).
+Already included: `images/treatment-room.jpg` (the parallax background for the hero, mission and sanctuary sections), `images/iasi-logo.png`, and the favicon and touch icon made from the logo. The decorative flower pattern still loads from the live WordPress media library.
 
 Drop the new photos into `images/` using these exact filenames. Until a file is added, a soft placeholder shows in its place.
 
