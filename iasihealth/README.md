@@ -21,4 +21,4 @@ All photos below are in `images/`. To swap one, replace the file and keep the sa
 | `images/libbe-open-system.webp` | The LIBBE table in the treatment room |
 | `images/libbe-controls.webp` | Close-up of the LIBBE control panel |
 | `images/iact-logo.webp` | I-ACT association logo |
-| `images/colon-illustration.png` | *(Optional)* licensed water/colon illustration for the FAQ section. Use only a properly licensed, unwatermarked file. |
+| `images/colon-illustration.webp` | Water-colon illustration beside the FAQ (created by the client) |

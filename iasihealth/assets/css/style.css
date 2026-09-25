@@ -347,7 +347,8 @@ p { margin: 0 0 1.1em; }
 .faq-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(40px, 7vw, 100px); align-items: start; }
 .faq-head { position: sticky; top: calc(var(--header-h) + 30px); }
 .water-art { margin-top: 2rem; aspect-ratio: 1 / 1; max-width: 360px; background: transparent; border-radius: 0; }
-.water-art img { object-fit: contain; mix-blend-mode: multiply; }
+.water-art { overflow: visible; }
+.water-art img { object-fit: contain; filter: drop-shadow(0 24px 30px rgba(29,143,198,.18)); animation: float 7s ease-in-out infinite; }
 .water-art.is-art { background: radial-gradient(circle at 50% 55%, var(--brand-soft) 0%, rgba(217,236,246,0) 62%); }
 .water-art.is-art::before { width: 38%; height: 50%; opacity: .5; animation: float 6s ease-in-out infinite; }
 .water-art.is-art::after { display: none; }
@@ -370,7 +371,7 @@ p { margin: 0 0 1.1em; }
 @media (max-width: 900px) {
   .faq-grid { grid-template-columns: 1fr; }
   .faq-head { position: static; }
-  .water-art { display: none; }
+  .water-art { max-width: 260px; margin: 1.5rem auto 0; }
 }
 
 /* Contact */
@@ -438,6 +439,6 @@ p { margin: 0 0 1.1em; }
 .js .reveal.is-in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .js .reveal { opacity: 1; transform: none; transition: none; }
-  .scroll-cue i::after, .water-art.is-art::before { animation: none; }
+  .scroll-cue i::after, .water-art.is-art::before, .water-art img { animation: none; }
   .parallax-media { transform: none !important; }
 }
