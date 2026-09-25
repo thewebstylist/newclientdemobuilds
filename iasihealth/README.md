@@ -48,4 +48,4 @@ The share image is `images/iasi-social-preview.jpg` (1200×630). Link previews r
 2. Set it as the homepage share image in the SEO plugin. In Yoast, edit the homepage, open the **Social** tab, and choose it as the Facebook image and the X image. To make it the fallback for every page, also set it under **Yoast SEO > Settings > Site basics > Site image**.
 3. Refresh cached previews with the Facebook Sharing Debugger (https://developers.facebook.com/tools/debug/) and LinkedIn Post Inspector (https://www.linkedin.com/post-inspector/). iMessage caches per conversation, so test in a new thread.
 
-`index.html` points to `https://iasihealth.com/wp-content/uploads/2026/09/iasi-social-preview.jpg`, the address WordPress gives the file when uploaded in September 2026. If the uploaded URL differs, update the `og:image` and `twitter:image` tags.
+The uploaded copy lives at `https://iasihealth.com/wp-content/uploads/2026/09/iasi-social-preview.png`, and `index.html`'s `og:image` and `twitter:image` tags point there.
