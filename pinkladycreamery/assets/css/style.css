@@ -164,6 +164,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .nav-ig .dot { fill: currentColor; stroke: none; }
 .nav-ig-label { display: none; }
 .nav-toggle { display: none; }
+.nav-mobile-only { display: none; }
 
 /* ---------- Hero ---------- */
 .hero {
@@ -467,6 +468,21 @@ html:not(.js) .marquee-track { animation: none; }
 .field input.is-invalid { border-color: var(--rose-deep); }
 .form-note { margin: 0; text-align: center; font-size: .85rem; color: var(--cocoa-soft); }
 
+/* ---------- Join our team ---------- */
+.join { background: var(--blush); padding-top: 0; }
+.join-card {
+  display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(2rem, 6vw, 5rem); align-items: center;
+  border-radius: var(--radius); padding: clamp(2rem, 5vw, 4rem);
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .45) 0 28px, transparent 28px 56px),
+    var(--pink);
+}
+.join-copy p { max-width: 460px; }
+.join .eyebrow { color: var(--cocoa); }
+.join-perks { display: grid; gap: .7rem; margin-top: 1.8rem; }
+.join-perks li { display: flex; gap: .7rem; align-items: baseline; font-weight: 500; color: var(--cocoa); }
+.join-perks li::before { content: "\2726"; color: var(--cocoa-soft); font-size: .8rem; }
+
 /* ---------- Footer ---------- */
 .site-footer { background: var(--cocoa-soft); color: var(--cream); position: relative; padding: clamp(4rem, 7vw, 5.5rem) 0 2rem; }
 .footer-scallop { position: absolute; top: -1px; left: 0; right: 0; height: 18px; background: var(--blush); -webkit-mask: radial-gradient(18px at 18px 0, #000 98%, transparent) 0 0 / 36px 18px repeat-x; mask: radial-gradient(18px at 18px 0, #000 98%, transparent) 0 0 / 36px 18px repeat-x; }
@@ -519,6 +535,7 @@ html:not(.js) .marquee-track { animation: none; }
   }
   .nav-menu.is-open { opacity: 1; visibility: visible; transform: none; transition: opacity .5s var(--ease), transform .5s var(--ease); }
   .nav-menu a:not(.btn) { font-family: var(--serif); font-size: 2rem; letter-spacing: 0; text-transform: none; font-weight: 500; }
+  .nav-mobile-only { display: list-item; }
   .nav-ig a { display: flex; align-items: center; gap: .6rem; }
   .nav-ig-label { display: inline; }
   .nav-cta .btn { padding: 1rem 2rem; font-size: .8rem; }
@@ -528,7 +545,7 @@ html:not(.js) .marquee-track { animation: none; }
   .hero-visual { max-width: 330px; margin-inline: auto; }
   .scroll-cue { display: none; }
 
-  .intro-grid, .steps-grid, .faq-grid, .book-grid { grid-template-columns: 1fr; }
+  .intro-grid, .steps-grid, .faq-grid, .book-grid, .join-card { grid-template-columns: 1fr; }
   .intro-media { max-width: 360px; }
   .intro-note { right: -4%; }
   .steps-head { position: static; }

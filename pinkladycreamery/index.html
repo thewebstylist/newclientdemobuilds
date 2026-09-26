@@ -63,6 +63,7 @@
           <li><a href="#events">Events</a></li>
           <li><a href="#story">Our Story</a></li>
           <li><a href="#faq">FAQ</a></li>
+          <li class="nav-mobile-only"><a href="#join-our-team">Join Our Team</a></li>
           <li class="nav-ig"><a href="https://www.instagram.com/pinkladycreamery" target="_blank" rel="noopener" aria-label="Pink Lady Creamery on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" class="dot"/></svg><span class="nav-ig-label">Instagram</span></a></li>
           <li class="nav-cta"><a class="btn btn-primary btn-sm" href="#book">Book Your Event</a></li>
         </ul>
@@ -486,7 +487,7 @@
           </ul>
         </div>
 
-        <form class="book-form reveal" action="mailto:events@pinkladycreamery.com" method="post" enctype="text/plain" novalidate>
+        <form class="book-form reveal" action="mailto:events@pinkladycreamery.com" method="post" enctype="text/plain" novalidate data-subject="Event request">
           <div class="field-row">
             <label class="field"><span>Name</span><input name="name" type="text" autocomplete="name" required></label>
             <label class="field"><span>Phone</span><input name="phone" type="tel" autocomplete="tel"></label>
@@ -507,6 +508,35 @@
       </div>
     </section>
 
+    <!-- ============ JOIN OUR TEAM ============ -->
+    <section class="join section" id="join-our-team" aria-labelledby="join-title">
+      <div class="container">
+        <div class="join-card">
+          <div class="join-copy">
+            <p class="eyebrow reveal">Join our team</p>
+            <h2 id="join-title" class="split">Love ice cream? <em>Come scoop with us.</em></h2>
+            <p class="reveal">If you have a love for ice cream, a great personality and would love to work in a fun environment bringing families and friends together over delicious ice cream, <strong>we would love to hear from you!</strong></p>
+            <ul class="join-perks">
+              <li class="reveal">Family owned &amp; operated</li>
+              <li class="reveal" style="--d:.08s">Birthdays, weddings &amp; events across SoCal</li>
+              <li class="reveal" style="--d:.16s">A sweet, fun crew</li>
+            </ul>
+          </div>
+          <form class="book-form join-form reveal" action="mailto:events@pinkladycreamery.com" method="post" enctype="text/plain" novalidate data-subject="Team application">
+            <div class="field-row">
+              <label class="field"><span>Name</span><input name="name" type="text" autocomplete="name" required></label>
+              <label class="field"><span>Phone</span><input name="phone" type="tel" autocomplete="tel"></label>
+            </div>
+            <label class="field"><span>Email</span><input name="email" type="email" autocomplete="email" required></label>
+            <label class="field"><span>Desired position</span><input name="position" type="text" placeholder="Which role interests you?"></label>
+            <label class="field"><span>Message</span><textarea name="message" rows="4" placeholder="Tell us a little about yourself and your availability&hellip;"></textarea></label>
+            <button class="btn btn-primary btn-block" type="submit">Send My Application</button>
+            <p class="form-note" role="status" aria-live="polite">Opens your email app with the details filled in, ready to send.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ============ FOOTER ============ -->
@@ -522,7 +552,7 @@
         <a href="#events">Events</a>
         <a href="#story">Our Story</a>
         <a href="#faq">FAQ</a>
-        <a href="https://pinkladycreamery.com/join-our-team/">Join Our Team</a>
+        <a href="#join-our-team">Join Our Team</a>
         <a href="#book">Book Now</a>
       </nav>
       <div class="footer-contact">

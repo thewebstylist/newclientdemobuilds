@@ -116,9 +116,8 @@
     });
   });
 
-  /* ---------- Booking form -> pre-filled email ---------- */
-  var form = $('.book-form');
-  if (form) {
+  /* ---------- Booking + team forms -> pre-filled email ---------- */
+  $$('form[data-subject]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var ok = true;
@@ -129,23 +128,21 @@
       });
       var note = $('.form-note', form);
       if (!ok) { note.textContent = 'Please add your name and a valid email so we can reply.'; return; }
-      var f = form.elements;
-      var lines = [
-        'Name: ' + f.name.value,
-        'Phone: ' + f.phone.value,
-        'Email: ' + f.email.value,
-        'Event date: ' + f.date.value,
-        'Event time: ' + f.time.value,
-        'Event location: ' + f.location.value,
-        'Number of guests: ' + f.guests.value,
-        '',
-        f.message.value
-      ];
-      var subject = 'Event request' + (f.date.value ? ' for ' + f.date.value : '') + ' from ' + f.name.value;
+      // One line per field, labelled with the field's visible label; the message goes last.
+      var lines = [], message = '';
+      $$('.field', form).forEach(function (field) {
+        var input = field.querySelector('input, textarea');
+        if (input.tagName === 'TEXTAREA') { message = input.value; return; }
+        lines.push(field.querySelector('span').textContent + ': ' + input.value);
+      });
+      if (message) lines.push('', message);
+      var name = form.elements.name.value.trim();
+      var date = form.elements.date ? form.elements.date.value : '';
+      var subject = form.getAttribute('data-subject') + (date ? ' for ' + date : '') + ' from ' + name;
       window.location.href = 'mailto:events@pinkladycreamery.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
-      note.textContent = 'Thank you! Your email app should open with your request ready to send.';
+      note.textContent = 'Thank you! Your email app should open with everything ready to send.';
     });
-  }
+  });
 
   var year = $('[data-year]');
   if (year) year.textContent = new Date().getFullYear();

@@ -34,16 +34,26 @@ Every photo loads straight from the existing WordPress media library (`https://p
   - the topping pills slide in opposite directions over the toppings photo
   - the "how it works" line draws itself as you read down the steps
   - the stat counters count up
-- **Trust and booking path**: a 3-step "how it works", 12 event types, the new Ice Cream Party Boxes, the family story, the FAQ from the current site, and a booking form with the same fields as the current contact form. "Book" buttons appear throughout, plus a sticky "Book Your Event" bar on phones.
+- **Trust and booking path**: a 3-step "how it works", 12 event types, the new Ice Cream Party Boxes, the family story, the FAQ from the current site, and a booking form with the same fields as the current contact form.
+- **Join Our Team**: the current Join Our Team page is now a section at the bottom of the page, with its intro text and an application form with the same fields (name, phone, email, desired position, message). "Join Our Team" in the footer and the phone menu jumps to it. "Book" buttons appear throughout, plus a sticky "Book Your Event" bar on phones.
 - **Design details**: arched photo frames (a nod to Mediterranean architecture), a scalloped pink-and-white awning along the top of the header that echoes their awning graphic, and a scalloped edge above the footer.
 - Typos from the current copy are fixed (for example "choclate", "raosted", "pinapple", "film premiers").
 - **Accessibility**: works with a keyboard, has visible focus states and AA-contrast text. When the visitor's device asks for reduced motion, the animation turns off and the flavors become a normal swipe row.
 
-## Booking form
+## Booking and team forms
 
-In this demo, **Send My Event Request** opens the visitor's email app with a pre-filled message to `events@pinkladycreamery.com` (name, phone, email, event date, time, location, guest count, message). The current site's WPForms form can't run inside an HTML widget, so for submissions that go straight into WordPress, replace the `<form class="book-form">` block with the WPForms form. Use a Shortcode widget in Elementor placed just after the HTML widget, or the equivalent Elementor Form widget.
+In this demo, **Send My Event Request** and **Send My Application** open the visitor's email app with a pre-filled message to `events@pinkladycreamery.com`, one line per field. The current site's WPForms forms can't run inside an HTML widget, so for submissions that go straight into WordPress, replace each `<form class="book-form">` block with the matching WPForms form. Use a Shortcode widget in Elementor placed just after the HTML widget, or the equivalent Elementor Form widget.
 
-## WordPress single-file version
+## Single-file versions
+
+Both files in `wordpress/` hold the whole page (markup, styles and scripts) in one HTML file you can copy and paste:
+
+| File | Use it for |
+| --- | --- |
+| `pinkladycreamery-homepage-embed.html` | **Pasting into WordPress.** Goes into one Elementor HTML widget (steps below). Its styles are scoped so the theme can't restyle it. |
+| `pinkladycreamery-standalone.html` | **A complete page on its own**, with the page title, SEO description and social share tags. Double-click to preview it, send it to the client, or upload it anywhere as `index.html`. |
+
+### Pasting into WordPress
 
 `wordpress/pinkladycreamery-homepage-embed.html` is the whole homepage in one block, for pasting into an Elementor **HTML** widget:
 
@@ -57,7 +67,7 @@ Notes:
 - The pinned flavor carousel needs the section and container holding the widget to have **Overflow: Default** and no entrance animation or motion effect (both would stop it from staying pinned).
 - Set the page title and meta description in the SEO plugin (for example Yoast), since a widget can't set them. The suggested title and description are in the `<head>` of `index.html`.
 
-To regenerate the file after editing the site: `python3 tools/build_embed.py` (no extra packages needed).
+To regenerate both files after editing `index.html`, `style.css` or `main.js`: `python3 tools/build_embed.py` (no extra packages needed).
 
 ## Open questions for the client
 
