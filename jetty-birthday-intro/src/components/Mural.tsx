@@ -71,7 +71,7 @@ const Cake: React.FC<{ x: number; y: number; flip?: boolean }> = ({ x, y, flip }
 export const Mural: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  // gloss sweep across JETTY!! once the lettering is revealed
+  // gloss sweep across 21ST + JETTY once the lettering is revealed
   const sweep = interpolate(frame, [(T.reveal + 0.15) * fps, (T.reveal + 0.95) * fps], [-500, 2400],
     { ...clamp, easing: theme.ease.inOut });
 
@@ -79,7 +79,7 @@ export const Mural: React.FC = () => {
     const x = 60 + random(`sx${i}`) * 1800;
     const y = 50 + random(`sy${i}`) * 980;
     // keep the lettering area clean
-    if (x > 380 && x < 1540 && y > 250 && y < 850) return null;
+    if (x > 380 && x < 1540 && y > 110 && y < 980) return null;
     const col = [C.red, C.blue, C.blueDeep][i % 3];
     return i % 4 === 0
       ? <path key={i} d={starPath(x, y, 10 + random(`sr${i}`) * 12, random(`st${i}`) * 90)} fill={col} />
@@ -87,17 +87,35 @@ export const Mural: React.FC = () => {
           transform={`rotate(${random(`sa${i}`) * 180} ${x} ${y})`} />;
   });
 
-  const text = (
-    <>
-      <text x={960} y={400} textAnchor="middle" fontFamily={theme.fonts.display} fontSize={132}
-        textLength={1120} lengthAdjust="spacingAndGlyphs" fill={C.red} transform="translate(7 8)">HAPPY BIRTHDAY</text>
-      <text x={960} y={400} textAnchor="middle" fontFamily={theme.fonts.display} fontSize={132}
-        textLength={1120} lengthAdjust="spacingAndGlyphs" fill={C.blue}>HAPPY BIRTHDAY</text>
-    </>
+  // Stacked lettering: small words in blue (red drop), hero words 21ST + JETTY in red (blue drop).
+  const LINES = {
+    happy: { y: 236, size: 118, len: 520, word: "HAPPY" },
+    birthday: { y: 578, size: 118, len: 820, word: "BIRTHDAY" },
+    son: { y: 930, size: 118, len: 470, word: "SON!!" },
+  };
+  const small = (l: { y: number; size: number; len: number; word: string }) => (
+    <g key={l.word}>
+      <text x={960} y={l.y} textAnchor="middle" fontFamily={theme.fonts.display} fontSize={l.size}
+        textLength={l.len} lengthAdjust="spacingAndGlyphs" fill={C.red} transform="translate(7 8)">{l.word}</text>
+      <text x={960} y={l.y} textAnchor="middle" fontFamily={theme.fonts.display} fontSize={l.size}
+        textLength={l.len} lengthAdjust="spacingAndGlyphs" fill={C.blue}>{l.word}</text>
+    </g>
+  );
+  const twentyFirst = (props: React.SVGProps<SVGTextElement>) => (
+    <text x={960} y={470} textAnchor="middle" fontFamily={theme.fonts.display} fontSize={250} {...props}>
+      21<tspan fontSize={118} dy={-112} dx={10}>ST</tspan>
+    </text>
   );
   const jetty = (props: React.SVGProps<SVGTextElement>) => (
-    <text x={960} y={765} textAnchor="middle" fontFamily={theme.fonts.display} fontSize={320}
-      textLength={1060} lengthAdjust="spacingAndGlyphs" {...props}>JETTY!!</text>
+    <text x={960} y={820} textAnchor="middle" fontFamily={theme.fonts.display} fontSize={265}
+      textLength={940} lengthAdjust="spacingAndGlyphs" {...props}>JETTY</text>
+  );
+  const hero = (word: (p: React.SVGProps<SVGTextElement>) => React.ReactElement) => (
+    <>
+      {word({ fill: C.blue, transform: "translate(11 13)" })}
+      {word({ fill: C.red, stroke: C.blueDeep, strokeWidth: 15, paintOrder: "stroke", strokeLinejoin: "round" })}
+      {word({ fill: "none", stroke: C.white, strokeWidth: 4, opacity: 0.85, transform: "translate(-4 -5)" })}
+    </>
   );
 
   return (
@@ -113,7 +131,7 @@ export const Mural: React.FC = () => {
             values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.45 1.25" result="grainA" />
           <feComposite in="rough" in2="grainA" operator="in" />
         </filter>
-        <clipPath id="jettyClip">{jetty({})}</clipPath>
+        <clipPath id="heroClip">{twentyFirst({})}{jetty({})}</clipPath>
         <linearGradient id="gloss" x1="0" x2="1" y1="0" y2="0">
           <stop offset="0" stopColor="#fff" stopOpacity="0" />
           <stop offset="0.5" stopColor="#fff" stopOpacity="0.55" />
@@ -133,20 +151,18 @@ export const Mural: React.FC = () => {
         <Cake x={205} y={850} />
         <Cake x={1715} y={850} flip />
         {/* lettering */}
-        {text}
-        {jetty({ fill: C.blue, transform: "translate(12 14)" })}
-        {jetty({ fill: C.red, stroke: C.blueDeep, strokeWidth: 16, paintOrder: "stroke", strokeLinejoin: "round" })}
-        {jetty({ fill: "none", stroke: C.white, strokeWidth: 4, opacity: 0.85, transform: "translate(-4 -5)" })}
-        {/* brush swash under the name */}
-        <path d="M560 830 C 760 800, 1150 850, 1370 812" stroke={C.blue} strokeWidth={18}
-          strokeLinecap="round" fill="none" />
-        {[[470, 560, 34], [1460, 540, 40], [960, 225, 30], [640, 225, 20], [1290, 222, 22]].map(([x, y, r], i) => (
+        {small(LINES.happy)}
+        {hero(twentyFirst)}
+        {small(LINES.birthday)}
+        {hero(jetty)}
+        {small(LINES.son)}
+        {[[440, 400, 34], [1480, 390, 40], [460, 740, 30], [1500, 905, 28], [700, 160, 20], [1225, 160, 22]].map(([x, y, r], i) => (
           <path key={i} d={starPath(x, y, r, i * 15)} fill={i % 2 ? C.red : C.blue} />
         ))}
       </g>
-      {/* fresh-paint gloss sweep, clipped to the name */}
-      <g clipPath="url(#jettyClip)" style={{ mixBlendMode: "screen" }}>
-        <rect x={sweep} y={450} width={260} height={380} fill="url(#gloss)" transform={`skewX(-20)`} />
+      {/* fresh-paint gloss sweep, clipped to the hero words */}
+      <g clipPath="url(#heroClip)" style={{ mixBlendMode: "screen" }}>
+        <rect x={sweep} y={250} width={260} height={600} fill="url(#gloss)" transform={`skewX(-20)`} />
       </g>
     </svg>
   );

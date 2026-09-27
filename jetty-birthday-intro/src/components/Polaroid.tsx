@@ -3,14 +3,14 @@ import { Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig }
 import { clamp, theme } from "../theme";
 import { T } from "../timeline";
 
-export const PW = 500; // polaroid width (world px)
-export const PH = 596;
+export const PW = 520; // polaroid width (world px)
+export const PH = 620;
 const BORDER = 24;
 const PHOTO = PW - BORDER * 2;
 
 type Props = {
   src: string; x: number; y: number; rot: number; z: number; fly: number;
-  dir: readonly [number, number] | readonly number[]; caption: string;
+  dir: readonly [number, number] | readonly number[];
 };
 
 // Returns {lift, dx, dy, spin, opacity, blur} for a polaroid at the current frame.
@@ -89,11 +89,6 @@ export const Polaroid: React.FC<Props> = (p) => {
         <div style={{ position: "absolute", inset: 0,
           background: "linear-gradient(125deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 38%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.08) 100%)" }} />
       </div>
-      <div style={{
-        position: "absolute", left: 0, right: 0, top: BORDER + PHOTO + 14, textAlign: "center",
-        fontFamily: theme.fonts.hand, fontSize: 38, color: theme.colors.blueDeep,
-        transform: `rotate(${p.z % 2 ? -2 : 2}deg)`, opacity: 0.9,
-      }}>{p.caption}</div>
     </div>
   );
 };
