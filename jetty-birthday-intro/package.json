@@ -1,0 +1,18 @@
+{
+  "name": "jetty-birthday-intro",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts JettyBirthday out/jetty_birthday_intro.mp4 --codec h264 --crf 16"
+  },
+  "dependencies": {
+    "@fontsource/luckiest-guy": "^5.3.0",
+    "@fontsource/permanent-marker": "^5.3.0",
+    "@remotion/cli": "^4.0.529",
+    "@types/react": "^19.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.529",
+    "typescript": "^7.0.2"
+  }
+}

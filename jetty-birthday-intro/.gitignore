@@ -1,0 +1,4 @@
+node_modules/
+out/
+# personal family photos are kept out of this public repo
+public/photos/
