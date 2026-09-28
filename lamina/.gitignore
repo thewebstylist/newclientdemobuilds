@@ -1,0 +1,6 @@
+node_modules
+dist
+lab
+*.log
+*.tsbuildinfo
+dist-standalone
