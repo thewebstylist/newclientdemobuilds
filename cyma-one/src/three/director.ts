@@ -49,10 +49,10 @@ export function dropPaintT(p: number) {
 export const SHOTS: Record<ChapterId, (p: number, l: Layout) => Shot> = {
   hero: (_p, l) => ({
     ...base,
-    W: l.portrait ? 1.2 : 1.8,
+    W: l.portrait ? 1.4 : 1.8,
     H: l.portrait ? 1.7 : 1.8,
     ty: l.portrait ? 0.95 : 0.98,
-    shiftY: l.portrait ? 0.07 : -0.04,
+    shiftY: l.portrait ? 0.08 : -0.04,
   }),
 
   drop: (p, l) => {

@@ -38,6 +38,13 @@ page.on('requestfailed', (r) => logs.push(`[requestfailed] ${r.url()}`))
 page.on('response', (r) => { if (r.status() >= 400) logs.push(`[http ${r.status()}] ${r.url()}`) })
 
 await page.goto(url, { waitUntil: 'networkidle' })
+if (flag('inset')) {
+  // Simulate the Claude iPhone app: a 100px top bar over the page and the
+  // home indicator, delivered as safe-area insets (as the artifact viewer does).
+  await page.addStyleTag({ content: `:root{--safe-top:100px;--safe-bottom:34px;padding-top:100px;padding-bottom:34px}
+    body::after{content:'';position:fixed;left:0;right:0;top:0;height:100px;background:rgba(40,40,44,.55);z-index:999;pointer-events:none}` })
+  await page.evaluate(() => window.dispatchEvent(new Event('resize')))
+}
 await page.waitForTimeout(2500)
 
 const chapters = await page.evaluate(() => {

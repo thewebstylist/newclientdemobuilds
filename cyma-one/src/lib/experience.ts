@@ -81,7 +81,17 @@ export function startExperience(opts: {
     spectrum: q<HTMLCanvasElement>('[data-spectrum]'),
   }
 
+  // Resolves the CSS safe-area insets (env() or an app override) to pixels.
+  const probe = document.createElement('div')
+  probe.setAttribute('aria-hidden', 'true')
+  probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;visibility:hidden;pointer-events:none;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)'
+  document.body.appendChild(probe)
+
   function measure() {
+    const footer = document.querySelector<HTMLElement>('.site-footer')
+    if (footer) root.style.setProperty('--footer-h', `${footer.offsetHeight}px`)
+    const ps = getComputedStyle(probe)
+    engine?.setInsets(parseFloat(ps.paddingTop) || 0, parseFloat(ps.paddingBottom) || 0)
     vh = window.innerHeight
     maxScroll = Math.max(1, document.documentElement.scrollHeight - vh)
     const w = window.innerWidth
@@ -298,8 +308,8 @@ export function startExperience(opts: {
   }
 
   const onResize = () => {
-    measure()
     if (engine) engine.resize(window.innerWidth, window.innerHeight)
+    measure()
     ScrollTrigger.refresh()
   }
   window.addEventListener('resize', onResize)
@@ -350,6 +360,7 @@ export function startExperience(opts: {
       gsap.ticker.remove(tick)
       window.removeEventListener('resize', onResize)
       ro.disconnect()
+      probe.remove()
       lenis?.destroy()
     },
   }

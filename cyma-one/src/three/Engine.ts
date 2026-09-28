@@ -57,6 +57,8 @@ export class Engine {
   private width = 1
   private height = 1
   private clock = 0
+  /** Vertical shift that centres the subject in the area between safe insets. */
+  private insetShift = 0
   private tmp = new THREE.Vector3()
   opts: EngineOptions
 
@@ -142,6 +144,12 @@ export class Engine {
     this.lastKey = ''
   }
 
+  /** Safe-area insets (px): the subject is framed in the visible band between them. */
+  setInsets(top: number, bottom: number) {
+    this.insetShift = this.height > 0 ? (top - bottom) / (2 * this.height) : 0
+    this.lastKey = ''
+  }
+
   resize(w: number, h: number) {
     this.width = w
     this.height = h
@@ -177,7 +185,7 @@ export class Engine {
     cam.lookAt(this.target)
     cam.updateProjectionMatrix()
     cam.projectionMatrix.elements[8] = -2 * shot.shiftX
-    cam.projectionMatrix.elements[9] = -2 * shot.shiftY
+    cam.projectionMatrix.elements[9] = -2 * (shot.shiftY - this.insetShift)
     cam.projectionMatrixInverse.copy(cam.projectionMatrix).invert()
 
     // Speaker.
