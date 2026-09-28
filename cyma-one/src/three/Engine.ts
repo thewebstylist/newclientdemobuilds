@@ -64,13 +64,15 @@ export class Engine {
 
   constructor(canvas: HTMLCanvasElement, opts: EngineOptions) {
     this.opts = opts
-    this.renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: false,
-      powerPreference: 'high-performance',
-      preserveDrawingBuffer: !!opts.capture,
-    })
+    // Some laptops refuse a high-performance, antialiased context (blocklisted
+    // GPUs, power saving). Retry with the most compatible settings first.
+    const base = { canvas, alpha: false, preserveDrawingBuffer: !!opts.capture }
+    try {
+      this.renderer = new THREE.WebGLRenderer({ ...base, antialias: true, powerPreference: 'high-performance' })
+    } catch (err) {
+      console.warn('[CYMA] Retrying WebGL with compatible settings.', err)
+      this.renderer = new THREE.WebGLRenderer({ ...base, antialias: false, powerPreference: 'default' })
+    }
     this.maxDpr = opts.capture ? 1 : Math.min(window.devicePixelRatio || 1, opts.mobile ? 1.5 : 1.75)
     this.renderer.setPixelRatio(this.maxDpr)
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -282,5 +284,7 @@ export class Engine {
 
   dispose() {
     this.renderer.dispose()
+    // Release the GPU context now rather than waiting for garbage collection.
+    this.renderer.forceContextLoss()
   }
 }

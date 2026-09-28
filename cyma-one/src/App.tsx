@@ -9,6 +9,7 @@ import { Hero, Drop, Frozen, Inside, Engineering, Specs, Finishes, Closing } fro
 import ReserveModal from './components/ReserveModal'
 import Effects from './components/Effects'
 import ScrollCue from './components/ScrollCue'
+import MotionNotice from './components/MotionNotice'
 
 const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const isMobile = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 760
@@ -19,7 +20,22 @@ export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const engineRef = useRef<Engine | null>(null)
   const expRef = useRef<ExperienceHandle | null>(null)
-  const [reduced] = useState(prefersReduced)
+  // The system reduced-motion setting is honoured by default; a visitor can
+  // opt into full motion from the notice, and the choice is remembered.
+  const [osReduced] = useState(prefersReduced)
+  const [motionChoice, setMotionChoice] = useState<string | null>(() => {
+    try { return localStorage.getItem('cyma-motion') } catch { return null }
+  })
+  const reduced = osReduced && motionChoice !== 'full'
+  const chapterRef = useRef<ChapterId>('hero')
+  const resumeRef = useRef<ChapterId | null>(null)
+  const chooseMotion = useCallback((full: boolean) => {
+    const v = full ? 'full' : 'reduced'
+    // Chapter lengths change between modes; return to the same chapter after the switch.
+    resumeRef.current = chapterRef.current
+    try { localStorage.setItem('cyma-motion', v) } catch { /* storage unavailable */ }
+    setMotionChoice(v)
+  }, [])
   const [webgl, setWebgl] = useState<WebGLState>('pending')
   const [palette, setPalette] = useState<PaletteName>('original')
   const [finish, setFinish] = useState<FinishName>('obsidian')
@@ -47,6 +63,7 @@ export default function App() {
     let exp: ExperienceHandle | null = null
     const root = document.documentElement
     root.classList.toggle('reduced', reduced)
+    setWebgl('pending')
     requestAnimationFrame(() => root.classList.add('is-ready'))
 
     const boot = async () => {
@@ -76,8 +93,12 @@ export default function App() {
         }
       }
       if (cancelled) { engine?.dispose(); return }
-      exp = startExperience({ engine, reduced, onChapter: setChapter })
+      exp = startExperience({ engine, reduced, onChapter: (id) => { chapterRef.current = id; setChapter(id) } })
       expRef.current = exp
+      if (resumeRef.current) {
+        exp.scrollTo(resumeRef.current, { immediate: true })
+        resumeRef.current = null
+      }
       if (engine) {
         // Reveal the live canvas once it has drawn a frame over the poster.
         requestAnimationFrame(() => requestAnimationFrame(() => !cancelled && setWebgl('ok')))
@@ -130,7 +151,8 @@ export default function App() {
           <source media="(max-aspect-ratio: 9/10)" srcSet="posters/hero-m.webp" />
           <img src="posters/hero-d.webp" alt="" fetchPriority="high" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} />
         </picture>
-        <canvas ref={canvasRef} className="scene__canvas" />
+        {/* Remounted when the motion mode changes so the new engine gets a fresh context. */}
+        <canvas key={reduced ? 'still' : 'motion'} ref={canvasRef} className="scene__canvas" />
         <div className="scene__grade" />
       </div>
 
@@ -158,6 +180,7 @@ export default function App() {
       </svg>
 
       <ScrollCue chapter={chapter} onGo={scrollTo} />
+      <MotionNotice osReduced={osReduced} reduced={reduced} webglFailed={webgl === 'failed'} onChoose={chooseMotion} />
 
       <ReserveModal open={reserveOpen} finish={finish} onFinish={setFinish} onClose={() => setReserveOpen(false)} />
       <Effects reduced={reduced} trail={trail} modalOpen={reserveOpen} />
