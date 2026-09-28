@@ -13,7 +13,7 @@ npm run build      # type-checks, then writes dist/
 npm run preview    # serves dist/
 ```
 
-`dist/` is fully static with relative paths, so it can be hosted from any folder.
+`dist/` is fully static with relative paths, so it can be hosted from any folder. It is built as one classic script (no ES modules, no `crossorigin` attributes), so `index.html` also runs when opened straight from disk (`file://`).
 
 ## How it's built
 
