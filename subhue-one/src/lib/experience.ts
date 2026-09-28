@@ -4,6 +4,7 @@ import Lenis from 'lenis'
 import { CHAPTERS, SHOTS, blendShots, smooth, dropPaintT, type ChapterId, type Layout, type Shot } from '../three/director'
 import { STAGGER } from '../three/constants'
 import { PARTS } from '../three/parts'
+import { appRoot } from './root'
 import type { Engine } from '../three/Engine'
 import { bass } from './audio'
 
@@ -47,7 +48,8 @@ export function startExperience(opts: {
   onChapter?: (id: ChapterId) => void
 }): ExperienceHandle {
   const { engine, reduced } = opts
-  const root = document.documentElement
+  // CSS variables are written on the app container (see lib/root.ts).
+  const vars = appRoot()
   const lenis = reduced ? null : new Lenis({ lerp: 0.1, wheelMultiplier: 0.9, touchMultiplier: 1.1 })
   if (lenis) {
     lenis.on('scroll', ScrollTrigger.update)
@@ -85,11 +87,11 @@ export function startExperience(opts: {
   const probe = document.createElement('div')
   probe.setAttribute('aria-hidden', 'true')
   probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;visibility:hidden;pointer-events:none;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)'
-  document.body.appendChild(probe)
+  vars.appendChild(probe)
 
   function measure() {
     const footer = document.querySelector<HTMLElement>('.site-footer')
-    if (footer) root.style.setProperty('--footer-h', `${footer.offsetHeight}px`)
+    if (footer) vars.style.setProperty('--footer-h', `${footer.offsetHeight}px`)
     const ps = getComputedStyle(probe)
     engine?.setInsets(parseFloat(ps.paddingTop) || 0, parseFloat(ps.paddingBottom) || 0)
     vh = window.innerHeight
@@ -178,7 +180,7 @@ export function startExperience(opts: {
     if (els.progress) els.progress.style.transform = `scaleX(${pageP})`
     if (els.cue) setVar(els.cue, '--page-p', pageP)
     ranges.forEach((r, i) => setVar(r.el, '--p', (reduced ? 1 : f.p[i]).toFixed(4)))
-    root.style.setProperty('--scene-dim', f.dim.toFixed(3))
+    vars.style.setProperty('--scene-dim', f.dim.toFixed(3))
 
     if (f.active !== lastActive) {
       lastActive = f.active
@@ -272,7 +274,7 @@ export function startExperience(opts: {
     specAccum = 0
     if (!spectrumFrozen && !reduced) specClock += 1 / 30
     const W = spec.width, H = spec.height
-    const color = getComputedStyle(root).getPropertyValue('--accent-live').trim() || '#fff'
+    const color = getComputedStyle(vars).getPropertyValue('--accent-live').trim() || '#fff'
     sctx.clearRect(0, 0, W, H)
     const bw = W / bars.length
     for (let i = 0; i < bars.length; i++) {

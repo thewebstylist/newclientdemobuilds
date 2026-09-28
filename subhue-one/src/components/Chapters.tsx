@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { FINISHES, FINISH_ORDER, PALETTES, PALETTE_ORDER, PIGMENT_NAMES, type FinishName, type PaletteName } from '../three/palettes'
 import { PARTS } from '../three/parts'
+import { posterSrc } from '../lib/posters'
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>
 
@@ -16,8 +17,8 @@ function Fallback({ name, show }: { name: string; show: boolean }) {
   if (!show) return null
   return (
     <picture className="fallback" aria-hidden="true">
-      <source media="(max-aspect-ratio: 9/10)" srcSet={`posters/${name}-m.webp`} />
-      <img src={`posters/${name}-d.webp`} alt="" loading="lazy" decoding="async" />
+      <source media="(max-aspect-ratio: 9/10)" srcSet={posterSrc(name, 'm')} />
+      <img src={posterSrc(name, 'd')} alt="" loading="lazy" decoding="async" />
     </picture>
   )
 }

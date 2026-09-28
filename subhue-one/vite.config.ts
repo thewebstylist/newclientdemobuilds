@@ -20,6 +20,11 @@ function openFromDisk(): Plugin {
   }
 }
 
+// SUBHUE_STANDALONE=1 (scripts/standalone.mjs) builds for the single-file
+// page / HTML widget: fonts are embedded and the CSS is emitted as one file
+// so the script can scope it to #subhue-root.
+const standalone = process.env.SUBHUE_STANDALONE === '1'
+
 export default defineConfig({
   // Relative base so the build works from any sub-path, static host or disk.
   base: './',
@@ -27,6 +32,8 @@ export default defineConfig({
   build: {
     target: 'es2020',
     modulePreload: false,
+    assetsInlineLimit: standalone ? 50_000_000 : 4096,
+    cssCodeSplit: !standalone,
     chunkSizeWarningLimit: 1400,
     rollupOptions: {
       output: {

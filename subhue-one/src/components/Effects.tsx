@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import { appRoot } from '../lib/root'
 
 const INTERACTIVE = 'a, button, input, select, textarea, label, summary, dialog, [role="button"], [role="radio"], [tabindex], .no-splat'
 
-const paintColor = (i: number) => getComputedStyle(document.documentElement).getPropertyValue(`--c${i}`).trim() || '#ff1f8f'
+const paintColor = (i: number) => getComputedStyle(appRoot()).getPropertyValue(`--c${i}`).trim() || '#ff1f8f'
 
 /** Irregular splat outline: a noisy circle plus a few satellite droplets. */
 function splatSVG(color: string) {

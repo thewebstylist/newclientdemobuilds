@@ -3,3 +3,4 @@ dist
 lab
 *.log
 *.tsbuildinfo
+dist-standalone

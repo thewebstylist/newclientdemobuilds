@@ -15,6 +15,19 @@ npm run preview    # serves dist/
 
 `dist/` is fully static with relative paths, so it can be hosted from any folder. It is built as one classic script (no ES modules, no `crossorigin` attributes), so `index.html` also runs when opened straight from disk (`file://`).
 
+## Single-file versions (HTML widget / one page)
+
+```bash
+npm run build:standalone
+```
+
+writes two files to `dist-standalone/`, each about 1.5 MB with everything inside (script, 3D engine, styles, fonts and the key stills):
+
+- `subhue-widget.html`: paste the whole file into one HTML widget. Built for a page such as newsite2026.com/subhue made of a single Elementor HTML widget. Use the **Elementor Canvas** page layout so the theme's header and footer don't sit on top of the demo.
+- `subhue-one-standalone.html`: a complete page to open, upload or host anywhere.
+
+All CSS is scoped to `#subhue-root`, and inherited text styles are reset inside it, so a site's theme (for example Elementor kit colours on headings) can't restyle the demo and the demo doesn't restyle the site. A few host rules make the page builder's containers full-bleed so the pinned chapters can stick. Chapter fallback stills for browsers without 3D are reduced to five embedded images; other chapters use the nearest one.
+
 ## How it's built
 
 | Layer | Choice |

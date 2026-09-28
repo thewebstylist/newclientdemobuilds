@@ -10,6 +10,8 @@ import ReserveModal from './components/ReserveModal'
 import Effects from './components/Effects'
 import ScrollCue from './components/ScrollCue'
 import MotionNotice from './components/MotionNotice'
+import { appRoot } from './lib/root'
+import { posterSrc } from './lib/posters'
 
 const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const isMobile = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 760
@@ -79,7 +81,7 @@ export default function App() {
           mobile: isMobile(),
           onAccent: (c) => {
             const live = paletteRef.current === 'mono' || !c ? PALETTES[paletteRef.current].accent : c
-            root.style.setProperty('--accent-live', live)
+            appRoot().style.setProperty('--accent-live', live)
           },
         })
         engine.resize(window.innerWidth, window.innerHeight)
@@ -119,9 +121,10 @@ export default function App() {
   useEffect(() => {
     engineRef.current?.setPalette(palette)
     const accent = PALETTES[palette].accent
-    document.documentElement.style.setProperty('--accent', accent)
-    document.documentElement.style.setProperty('--accent-live', accent)
-    PALETTES[palette].colors.forEach((c, i) => document.documentElement.style.setProperty(`--c${i}`, c))
+    const vars = appRoot().style
+    vars.setProperty('--accent', accent)
+    vars.setProperty('--accent-live', accent)
+    PALETTES[palette].colors.forEach((c, i) => vars.setProperty(`--c${i}`, c))
   }, [palette, webgl])
 
   useEffect(() => {
@@ -150,8 +153,8 @@ export default function App() {
       </a>
       <div className={`scene scene--${webgl}`} aria-hidden="true">
         <picture className="scene__poster">
-          <source media="(max-aspect-ratio: 9/10)" srcSet="posters/hero-m.webp" />
-          <img src="posters/hero-d.webp" alt="" fetchPriority="high" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} />
+          <source media="(max-aspect-ratio: 9/10)" srcSet={posterSrc('hero', 'm')} />
+          <img src={posterSrc('hero', 'd')} alt="" fetchPriority="high" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} />
         </picture>
         {/* Remounted when the motion mode changes so the new engine gets a fresh context. */}
         <canvas key={reduced ? 'still' : 'motion'} ref={canvasRef} className="scene__canvas" />
