@@ -40,5 +40,5 @@ async function shot(job, size, type = 'image/webp', q = 0.8, file) {
 }
 
 for (const job of jobs) for (const size of sizes) await shot(job, size, 'image/webp', job.name === 'hero' ? 0.82 : 0.78, `${out}/${job.name}-${size.suffix}.webp`)
-if (!only) await shot({ id: 'crunch', p: 0.62 }, { w: 1200, h: 630, mobile: 0 }, 'image/jpeg', 0.86, `${out}/og.jpg`)
+// posters/og.jpg (the social preview) is a hand-picked hero frame; it is not regenerated here.
 await browser.close()
