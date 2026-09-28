@@ -110,10 +110,21 @@ check('sound toggles off', (await sound.getAttribute('aria-pressed')) === 'false
 // Splat on a background click, none on a button.
 await scrollToId('specs', 0)
 await page.waitForTimeout(600)
+// Count splats as they are created: under software rendering a single slow
+// frame can finish the fade-out before a presence check runs.
+await page.evaluate(() => {
+  window.__splats = 0
+  new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => { if (n.classList?.contains('splat')) window.__splats++ })))
+    .observe(document.querySelector('.splats'), { childList: true })
+})
 await page.mouse.click(700, 160)
 await page.waitForTimeout(250)
-const splats = await page.locator('.splat').count()
-check('splat on background click', splats >= 1, `count ${splats}`)
+const splats = await page.evaluate(() => window.__splats)
+check('splat on background click', splats >= 1, `created ${splats}`)
+await page.getByRole('button', { name: 'Sound' }).click()
+await page.getByRole('button', { name: 'Sound' }).click()
+const onButton = await page.evaluate(() => window.__splats)
+check('no splat on a control', onButton === splats, `created ${onButton - splats}`)
 await page.screenshot({ path: `${out}/splat.png` })
 
 // Nav smooth scroll.

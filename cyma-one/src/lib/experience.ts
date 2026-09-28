@@ -61,6 +61,7 @@ export function startExperience(opts: {
   const q = <T extends Element = HTMLElement>(sel: string) => document.querySelector<T>(sel)
   const els = {
     progress: q('[data-progress]'),
+    cue: q('[data-cue]'),
     chapterLabel: q('[data-chapter-label]'),
     dropHz: q('[data-readout="drop-hz"]'),
     dropHzUnit: q('[data-readout="drop-hz-unit"]'),
@@ -163,7 +164,9 @@ export function startExperience(opts: {
   let spectrumFrozen = false
 
   function writeDom(f: Frame, y: number) {
-    if (els.progress) els.progress.style.transform = `scaleX(${(y / maxScroll).toFixed(4)})`
+    const pageP = (y / maxScroll).toFixed(4)
+    if (els.progress) els.progress.style.transform = `scaleX(${pageP})`
+    if (els.cue) setVar(els.cue, '--page-p', pageP)
     ranges.forEach((r, i) => setVar(r.el, '--p', (reduced ? 1 : f.p[i]).toFixed(4)))
     root.style.setProperty('--scene-dim', f.dim.toFixed(3))
 

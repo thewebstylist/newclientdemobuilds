@@ -8,6 +8,7 @@ import Header from './components/Header'
 import { Hero, Drop, Frozen, Inside, Engineering, Specs, Finishes, Closing } from './components/Chapters'
 import ReserveModal from './components/ReserveModal'
 import Effects from './components/Effects'
+import ScrollCue from './components/ScrollCue'
 
 const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const isMobile = () => window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 760
@@ -155,6 +156,8 @@ export default function App() {
         <line data-leader x1="0" y1="0" x2="0" y2="0" />
         <circle data-leader-dot r="3.5" cx="0" cy="0" />
       </svg>
+
+      <ScrollCue chapter={chapter} onGo={scrollTo} />
 
       <ReserveModal open={reserveOpen} finish={finish} onFinish={setFinish} onClose={() => setReserveOpen(false)} />
       <Effects reduced={reduced} trail={trail} modalOpen={reserveOpen} />
