@@ -35,3 +35,15 @@ Every photo, logo and Trish's video still loads from the existing Wix media libr
 - **Contact form:** design only. Submitting shows a note that the form isn't connected yet and gives the email address. To make it live, point the `<form>` at a form service (Formspree, Netlify Forms, etc.) and remove the `data-preview-form` attribute.
 - **Social icons:** kept as on Wix, which means they link to the generic facebook.com, instagram.com, etc. home pages. Swap in the real profile URLs in each page's footer.
 - **Microcopy:** small labels and section headings were added for the new layout (for example "Partners · Speakers · Authors", "Four ways to begin again", "Every season can open into new love", and the Mark quote "We are all connected." taken from his bio). All main body copy is unchanged from the Wix site.
+
+## Social share preview (text messages, Facebook, LinkedIn, X)
+
+The share image is `images/trishandmark-social-preview.jpg` (1200×630), cropped from the new homepage hero. Every page's `<head>` has `og:image` and `twitter:image` tags pointing at:
+
+`https://www.trishandmark.com/images/trishandmark-social-preview.jpg`
+
+Link-preview crawlers need a full URL, so that address only works once the new site is live on trishandmark.com with the `images/` folder uploaded alongside the pages. If the site is hosted somewhere else, or the image is uploaded to a different path, update that URL in all eight pages.
+
+If the site stays on Wix for now, upload the image there instead: **Wix dashboard > Marketing & SEO > SEO > Social share**, then set it as the default social share image (and the homepage's own social share image in the page's SEO settings).
+
+After it's live, refresh cached previews with the Facebook Sharing Debugger (https://developers.facebook.com/tools/debug/) and LinkedIn Post Inspector (https://www.linkedin.com/post-inspector/). iMessage caches per conversation, so test in a new thread.
