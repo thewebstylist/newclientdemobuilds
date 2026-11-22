@@ -18,13 +18,18 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
   const menuBtn = $("#menuBtn"), mobileNav = $("#mobileNav");
-  menuBtn.addEventListener("click", () => {
-    const open = menuBtn.getAttribute("aria-expanded") !== "true";
+  const setMenu = (open) => {
     menuBtn.setAttribute("aria-expanded", String(open));
     menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-    mobileNav.hidden = !open;
-  });
-  $$("a", mobileNav).forEach((a) => a.addEventListener("click", () => { mobileNav.hidden = true; menuBtn.setAttribute("aria-expanded", "false"); }));
+    mobileNav.classList.toggle("open", open);
+    mobileNav.inert = !open;
+    nav.classList.toggle("menu-open", open);
+    doc.classList.toggle("menu-lock", open);
+  };
+  menuBtn.addEventListener("click", () => setMenu(menuBtn.getAttribute("aria-expanded") !== "true"));
+  $$("a", mobileNav).forEach((a) => a.addEventListener("click", () => setMenu(false)));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && mobileNav.classList.contains("open")) { setMenu(false); menuBtn.focus(); } });
+  window.matchMedia("(min-width: 881px)").addEventListener("change", (m) => { if (m.matches) setMenu(false); });
   $("#yr").textContent = new Date().getFullYear();
 
   /* ---------- Timecode ---------- */
@@ -50,9 +55,54 @@
     requestAnimationFrame(tick);
   };
 
-  /* ---------- Reveals ---------- */
-  const revealTargets = $$(".section .sec-head, .section .panel, .feat, .wcard, .cta-in");
-  revealTargets.forEach((el) => el.classList.add("rv"));
+  /* ---------- Reveals: varied entrances, staggered groups, word-split headlines ---------- */
+  const splitWords = (el) => {
+    const out = document.createDocumentFragment();
+    let i = 0;
+    const wrap = (node) => {
+      const w = document.createElement("span"), wi = document.createElement("span");
+      w.className = "w"; wi.className = "wi"; wi.style.setProperty("--wd", `${i++ * 70}ms`);
+      wi.append(node); w.append(wi); return w;
+    };
+    for (const node of Array.from(el.childNodes)) {
+      if (node.nodeType === 3) {
+        node.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          out.append(/^\s+$/.test(part) ? document.createTextNode(" ") : wrap(document.createTextNode(part)));
+        });
+      } else if (node.nodeName === "BR") out.append(node);
+      else out.append(wrap(node));
+    }
+    el.textContent = ""; el.append(out); el.classList.add("split");
+  };
+  if (!reduce) $$(".section .sec-head h2, .cta h2").forEach(splitWords);
+
+  const groups = [
+    [".sec-head", "up", 0],
+    [".tele-grid > .panel", "up", 90],
+    [".bento > .panel", "scale", 80],
+    [".net-panel", "left", 0],
+    [".host-side > .panel", "right", 140],
+    [".feat-grid > .feat", "up", 60],
+    [".plans > .plan", "up", 120],
+    [".p2p-chips", "up", 0],
+    [".p2p-stage > *", "scale", 140],
+    [".work-grid > .wcard", "clip", 90],
+    [".steps > .step", "left", 120],
+    [".cta-in", "blur", 0]
+  ];
+  const revealTargets = [];
+  for (const [sel, anim, step] of groups) {
+    const parents = new Map();
+    $$(sel).forEach((el) => {
+      const k = el.parentElement, n = parents.get(k) || 0;
+      parents.set(k, n + 1);
+      el.classList.add("rv"); el.dataset.anim = anim; el.style.setProperty("--d", `${Math.min(n, 6) * step}ms`);
+      revealTargets.push(el);
+    });
+  }
+  $$(".checks").forEach((ul) => $$("li", ul).forEach((li, i) => li.style.setProperty("--li", `${i * 70}ms`)));
+  $$(".feat .fi > *").forEach((shape) => shape.setAttribute("pathLength", "100"));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
       if (!en.isIntersecting) return;
@@ -63,9 +113,66 @@
       if (g) { const p = +g.dataset.pct; g.style.strokeDasharray = `${p} ${100 - p}`; }
       io.unobserve(el);
     });
-  }, { threshold: 0.18, rootMargin: "0px 0px -6% 0px" });
-  revealTargets.forEach((el) => io.observe(el));
+  }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
+  // Clip-revealed items start fully clipped, which the observer reads as invisible, so watch their container instead
+  const clipIo = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      Array.from(en.target.children).forEach((el) => { if (el.dataset.anim === "clip") el.classList.add("in"); });
+      clipIo.unobserve(en.target);
+    });
+  }, { threshold: 0.08 });
+  revealTargets.forEach((el) => (el.dataset.anim === "clip" ? clipIo.observe(el.parentElement) : io.observe(el)));
   $$(".hero [data-count]").forEach(countUp);
+
+  /* ---------- Scroll-linked motion: progress bar, hero parallax, marquee, image drift ---------- */
+  const progress = $("#progress"), heroIn = $(".hero-in"), heroStats = $(".hero-stats"), heroSky = $(".hero-sky"), globeEl = $("#globe");
+  const mq = $(".mq-track"), wimgs = $$(".wimg");
+  [heroIn, heroStats, heroSky, globeEl, ...wimgs].forEach((el) => el && el.classList.add("parallax"));
+  let ticking = false;
+  const scrollFrame = () => {
+    const y = window.scrollY, vh = window.innerHeight, max = document.documentElement.scrollHeight - vh;
+    progress.style.transform = `scaleX(${max > 0 ? (y / max).toFixed(4) : 0})`;
+    if (!reduce) {
+      if (y < vh * 1.2) {
+        const k = Math.min(1, y / (vh * 0.9));
+        heroIn.style.transform = `translate3d(0,${(y * 0.28).toFixed(1)}px,0)`;
+        heroIn.style.opacity = (1 - k * 0.9).toFixed(3);
+        heroStats.style.transform = `translate3d(0,${(y * 0.12).toFixed(1)}px,0)`;
+        heroSky.style.transform = `translate3d(0,${(y * 0.35).toFixed(1)}px,0)`;
+        globeEl.style.transform = `translate3d(0,${(y * 0.18).toFixed(1)}px,0) scale(${(1 + k * 0.12).toFixed(3)}) rotate(${(k * -8).toFixed(2)}deg)`;
+      }
+      for (const w of wimgs) {
+        const r = w.parentElement.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > vh) continue;
+        const off = (r.top + r.height / 2 - vh / 2) / vh;
+        w.style.transform = `translate3d(0,${(off * -36).toFixed(1)}px,0)`;
+      }
+    }
+    ticking = false;
+  };
+  const requestFrame = () => { if (!ticking) { ticking = true; requestAnimationFrame(scrollFrame); } };
+  window.addEventListener("scroll", requestFrame, { passive: true });
+  window.addEventListener("resize", requestFrame);
+  scrollFrame();
+
+  // Marquee drifts on its own, speeds up and leans with scroll velocity, then eases back
+  if (mq && !reduce) {
+    mq.style.animation = "none";
+    let mqX = 0, lastY = window.scrollY, lastT = performance.now(), vel = 0;
+    const mqLoop = (now) => {
+      const dt = Math.min(0.05, Math.max(0.001, (now - lastT) / 1000)); lastT = now;
+      const y = window.scrollY, dy = y - lastY; lastY = y;
+      vel += (dy / dt - vel) * 0.12;
+      const speed = 60 + Math.min(900, Math.abs(vel) * 0.6);
+      const half = mq.scrollWidth / 2 || 1;
+      mqX = (mqX + speed * dt * (vel < -5 ? -1 : 1) + half) % half;
+      const skew = Math.max(-8, Math.min(8, vel * -0.006));
+      mq.style.transform = `translate3d(${(-mqX).toFixed(1)}px,0,0) skewX(${skew.toFixed(2)}deg)`;
+      requestAnimationFrame(mqLoop);
+    };
+    requestAnimationFrame(mqLoop);
+  }
 
   /* Run a loop only while its element is on screen */
   const whenVisible = (el, onShow, onHide) => {
