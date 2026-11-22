@@ -2,7 +2,7 @@
 
 Demo site for Sterling Creations Ai: AI creative studio + website & app hosting, hosted on a Cloudflare Worker.
 
-**Live:** https://sterling-edge.sterling-50e.workers.dev
+**Live:** https://hosting.sterlingcreations.ai (also https://sterling-edge.sterling-50e.workers.dev)
 
 ## What's in here
 
@@ -25,8 +25,31 @@ The live data comes from Cloudflare itself: every request carries the visitor's 
 3. Deploy (pick one):
    - **With the API token saved in the cloud environment** (Network secrets → host `api.cloudflare.com`, header `Authorization`, prefix `Bearer`): `npm run deploy`. Done.
    - **Without a token:** ask Claude to deploy through the Cloudflare connector. Claude uploads `dist/worker.js` through a temporary, key-protected helper Worker, verifies the file hash, publishes, then deletes the helper.
-4. Custom domain: in the Cloudflare dashboard, open the Worker → Settings → Domains & Routes → Add custom domain (the domain must be a zone in this account).
+4. Custom domain: see "Client domains" below.
 
 Images (jpg/png/webp) in `public/` are bundled too, which is fine for a few images such as the share image `public/assets/og-image.jpg` (1200×630). For sites with many photos, host them on a CDN or move to Workers Static Assets.
 
 Share tags use `__ORIGIN__` in `index.html`; the Worker swaps in the real address, so link previews keep working after you add a custom domain.
+
+## Client domains (the sterlingcloud.dev hub)
+
+Client domains stay at whatever DNS host they already use. They point one CNAME at the hub, and Cloudflare for SaaS
+(enabled on `sterlingcloud.dev`, first 100 hostnames free, then $0.10/hostname/month) issues the certificate.
+
+| Piece | Value |
+| --- | --- |
+| Hub zone | `sterlingcloud.dev` (registered at Cloudflare) |
+| Fallback origin | `edge.sterlingcloud.dev` (AAAA `100::`, proxied, no server behind it) |
+| Per-site Worker route | `<hostname>/*` → that site's Worker, added on the hub zone |
+
+To connect a new client hostname (Claude can do steps 1–2 through the Cloudflare connector):
+1. Add the custom hostname on the hub zone (SSL/TLS → Custom Hostnames), SSL method HTTP.
+2. Add a Worker route on the hub zone: `<hostname>/*` → the client's Worker.
+3. Client adds at their DNS host:
+   - CNAME `<subdomain>` → `edge.sterlingcloud.dev`
+   - TXT `_cf-custom-hostname.<subdomain>` → the ownership value Cloudflare shows
+4. Certificate issues automatically within minutes.
+
+Root domains (`client.com` with no subdomain) need a DNS host that supports CNAME flattening/ALIAS at the root; otherwise use `www`.
+
+Live example: `hosting.sterlingcreations.ai` (DNS at SiteGround) → route `hosting.sterlingcreations.ai/*` → Worker `sterling-edge`.
