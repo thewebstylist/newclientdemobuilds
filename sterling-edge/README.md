@@ -27,4 +27,6 @@ The live data comes from Cloudflare itself: every request carries the visitor's 
    - **Without a token:** ask Claude to deploy through the Cloudflare connector. Claude uploads `dist/worker.js` through a temporary, key-protected helper Worker, verifies the file hash, publishes, then deletes the helper.
 4. Custom domain: in the Cloudflare dashboard, open the Worker → Settings → Domains & Routes → Add custom domain (the domain must be a zone in this account).
 
-Images that are binary files (jpg/png/webp) are skipped by the bundler; host them on a CDN or move the project to Workers Static Assets when a site needs many local images.
+Images (jpg/png/webp) in `public/` are bundled too, which is fine for a few images such as the share image `public/assets/og-image.jpg` (1200×630). For sites with many photos, host them on a CDN or move to Workers Static Assets.
+
+Share tags use `__ORIGIN__` in `index.html`; the Worker swaps in the real address, so link previews keep working after you add a custom domain.

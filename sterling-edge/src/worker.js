@@ -16,6 +16,9 @@ const COLO_CITY = {
   JNB: "Johannesburg", CPT: "Cape Town", LOS: "Lagos", NBO: "Nairobi", CAI: "Cairo", HNL: "Honolulu"
 };
 
+// Images are bundled as base64; decode once per isolate.
+for (const f of Object.values(FILES)) if (f.b64) { f.body = Uint8Array.from(atob(f.b64), (c) => c.charCodeAt(0)); delete f.b64; }
+
 const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -62,10 +65,13 @@ export default {
     const file = FILES[key];
     if (!file) {
       const page = FILES["/index.html"];
-      return new Response(page.body, { status: 404, headers: { "Content-Type": page.type, ...SECURITY_HEADERS } });
+      return new Response(page.body.replaceAll("__ORIGIN__", url.origin), { status: 404, headers: { "Content-Type": page.type, ...SECURITY_HEADERS } });
     }
 
-    const etag = `"${file.hash}"`;
+    // HTML may reference __ORIGIN__ (share-image URLs must be absolute); fill in the host serving this request.
+    const isHtml = file.type.startsWith("text/html");
+    const body = isHtml ? file.body.replaceAll("__ORIGIN__", url.origin) : file.body;
+    const etag = isHtml ? `"${file.hash}-${url.host}"` : `"${file.hash}"`;
     const headers = {
       "Content-Type": file.type,
       ETag: etag,
@@ -73,6 +79,6 @@ export default {
       ...SECURITY_HEADERS
     };
     if (request.headers.get("If-None-Match") === etag) return new Response(null, { status: 304, headers });
-    return new Response(request.method === "HEAD" ? null : file.body, { headers });
+    return new Response(request.method === "HEAD" ? null : body, { headers });
   }
 };
