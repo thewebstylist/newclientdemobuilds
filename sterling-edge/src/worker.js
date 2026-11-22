@@ -75,7 +75,11 @@ export default {
     const headers = {
       "Content-Type": file.type,
       ETag: etag,
-      "Cache-Control": key.endsWith(".html") ? "public, max-age=0, must-revalidate" : "public, max-age=86400, stale-while-revalidate=604800",
+      // HTML always revalidates. Versioned assets (?v=hash, added by the build) never change, so cache them for a year.
+      // Unversioned asset requests get a short cache so an update shows up within minutes.
+      "Cache-Control": isHtml
+        ? "public, max-age=0, must-revalidate"
+        : url.searchParams.has("v") ? "public, max-age=31536000, immutable" : "public, max-age=300, must-revalidate",
       ...SECURITY_HEADERS
     };
     if (request.headers.get("If-None-Match") === etag) return new Response(null, { status: 304, headers });
