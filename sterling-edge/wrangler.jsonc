@@ -1,0 +1,9 @@
+{
+  // Lets `npx wrangler deploy` work too (after `node tools/build.mjs`).
+  "name": "sterling-edge",
+  "account_id": "50e395bd83cd9471e8b573c87419ea06",
+  "main": "dist/worker.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "observability": { "enabled": true }
+}
