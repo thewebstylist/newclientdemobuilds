@@ -5,6 +5,15 @@ import { join, relative, extname, dirname } from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
+// Minify CSS/JS with esbuild when installed (npm i), and strip HTML indentation.
+let esbuild = null;
+try { esbuild = await import("esbuild"); } catch { console.warn("esbuild not installed: assets are bundled unminified"); }
+const minify = async (body, ext) => {
+  if (ext === ".html") return body.replace(/\n\s+/g, "\n");
+  if (esbuild && (ext === ".css" || ext === ".js")) return (await esbuild.transform(body, { loader: ext.slice(1), minify: true })).code;
+  return body;
+};
+
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pub = join(root, "public");
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".svg": "image/svg+xml", ".json": "application/json", ".txt": "text/plain; charset=utf-8", ".xml": "application/xml" };
@@ -14,7 +23,7 @@ const files = {};
 for (const p of walk(pub)) {
   const type = TYPES[extname(p)];
   if (!type) { console.warn(`skipped (binary/unknown type): ${relative(root, p)}`); continue; }
-  const body = readFileSync(p, "utf8");
+  const body = await minify(readFileSync(p, "utf8"), extname(p));
   files["/" + relative(pub, p).split("\\").join("/")] = { type, hash: createHash("sha1").update(body).digest("hex").slice(0, 16), body };
 }
 const worker = readFileSync(join(root, "src/worker.js"), "utf8");
