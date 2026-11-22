@@ -22,9 +22,11 @@ The live data comes from Cloudflare itself: every request carries the visitor's 
 
 1. Copy this folder, rename it (e.g. `acme-plumbing/`), and change `"name"` in `wrangler.jsonc`. That name becomes the URL: `https://<name>.sterling-50e.workers.dev`.
 2. Design and edit in `public/`. Preview: `npm install` once, then `npm run preview`.
-3. Deploy (pick one):
-   - **With the API token saved in the cloud environment** (Network secrets → host `api.cloudflare.com`, header `Authorization`, prefix `Bearer`): `npm run deploy`. Done.
-   - **Without a token:** ask Claude to deploy through the Cloudflare connector. Claude uploads `dist/worker.js` through a temporary, key-protected helper Worker, verifies the file hash, publishes, then deletes the helper.
+3. Deploy: automatic. Cloudflare Workers Builds watches this repo (root directory `sterling-edge`):
+   - push to `main` → builds with `npm install && node tools/build.mjs`, then `npx wrangler deploy` (live)
+   - push to any other branch → `npx wrangler versions upload` (a preview version, not live)
+   - Build logs and one-click rollback: Cloudflare dashboard → Workers & Pages → sterling-edge → Deployments.
+   Fallbacks: `npm run deploy` with a token in the environment's Network secrets, or a connector upload via Claude.
 4. Custom domain: see "Client domains" below.
 
 Images (jpg/png/webp) in `public/` are bundled too, which is fine for a few images such as the share image `public/assets/og-image.jpg` (1200×630). For sites with many photos, host them on a CDN or move to Workers Static Assets.
